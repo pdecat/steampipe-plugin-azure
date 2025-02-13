@@ -139,6 +139,7 @@ func listPrivateDNSZones(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	subscriptionID := session.SubscriptionID
 
 	dnsClient := privatedns.NewPrivateZonesClientWithBaseURI(session.ResourceManagerEndpoint, subscriptionID)
+	dnsClient.RetryAttempts = 1
 	dnsClient.Authorizer = session.Authorizer
 
 	result, err := dnsClient.List(ctx, nil)

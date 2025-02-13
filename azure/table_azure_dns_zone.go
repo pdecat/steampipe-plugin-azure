@@ -138,6 +138,7 @@ func listDNSZones(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 	subscriptionID := session.SubscriptionID
 
 	dnsClient := dns.NewZonesClientWithBaseURI(session.ResourceManagerEndpoint, subscriptionID)
+	dnsClient.RetryAttempts = 1
 	dnsClient.Authorizer = session.Authorizer
 
 	result, err := dnsClient.List(ctx, nil)
