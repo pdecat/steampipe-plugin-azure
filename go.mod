@@ -1,4 +1,4 @@
-module github.com/turbot/steampipe-plugin-azure
+module github.com/pdecat/steampipe-plugin-azure
 
 go 1.24
 
