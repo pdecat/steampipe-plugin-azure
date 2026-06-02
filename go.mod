@@ -68,7 +68,7 @@ require (
 	github.com/eko/gocache/store/ristretto/v4 v4.2.1 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/gertd/go-pluralize v0.2.1 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
@@ -155,4 +155,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/turbot/steampipe-plugin-sdk/v5 => github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev1
+replace github.com/turbot/steampipe-plugin-sdk/v5 => github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev2
