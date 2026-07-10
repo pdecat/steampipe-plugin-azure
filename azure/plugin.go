@@ -78,6 +78,19 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 				Scope:      []string{"connection", "service", "action"},
 				Where:      "service = 'Microsoft.Storage' and action = 'storageAccounts/read'",
 			},
+			// azure_storage_share_file fans out one fileServices/shares list per storage account
+			// (ParentHydrate: listStorageAccounts); on a storage-heavy subscription (hundreds
+			// of storage accounts) that per-account burst drains the per-(subscription,
+			// principal) ARM read bucket and triggers 429 SubscriptionRequestsThrottled. Cap
+			// the per-connection fan-out rate so the shares listing can't spike a
+			// subscription's read budget on its own.
+			{
+				Name:       "azure_storage_share_file",
+				FillRate:   10,
+				BucketSize: 100,
+				Scope:      []string{"connection", "service", "action"},
+				Where:      "service = 'Microsoft.Storage' and action = 'fileServices/shares/read'",
+			},
 			// https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-blob-storage-limits
 			{
 				Name:       "azure_storage_blob",
