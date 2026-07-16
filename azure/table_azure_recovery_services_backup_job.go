@@ -222,6 +222,19 @@ func backupJobProperties(ctx context.Context, d *transform.TransformData) (inter
 				output["Status"] = data.Properties.GetJob().Status
 			}
 		}
+
+		// GetJob() only exposes the base Job fields; surface the
+		// AzureStorageJob-specific StorageAccountName (and version) so a
+		// file-share backup job can be tied to its storage account directly,
+		// without listing every storage account's file shares.
+		if storageJob, ok := data.Properties.(*armrecoveryservicesbackup.AzureStorageJob); ok {
+			if storageJob.StorageAccountName != nil {
+				output["StorageAccountName"] = storageJob.StorageAccountName
+			}
+			if storageJob.StorageAccountVersion != nil {
+				output["StorageAccountVersion"] = storageJob.StorageAccountVersion
+			}
+		}
 	}
 	return output, nil
 }
