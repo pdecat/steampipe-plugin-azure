@@ -141,6 +141,28 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 				Scope:      []string{"connection", "subscription"},
 				Where:      "service = 'Microsoft.ResourceGraph' and action = 'resources/read'",
 			},
+			// Aggregate backstop. Azure Resource Manager throttles read requests
+			// per (subscription, principal) actor -- 429 SubscriptionRequestsThrottled --
+			// not per action. The per-action limiters above each pace a single hot call,
+			// but nothing bounds the TOTAL read rate one subscription+principal issues
+			// across all services at once. A resource-heavy subscription (hundreds of
+			// storage accounts plus a large network estate) can still blow the shared
+			// read bucket when many services enumerate concurrently, and the 429 then
+			// surfaces on whichever call drains it -- observed on publicIPAddresses/read
+			// (itself capped above) and cdn profiles/read. This per-connection bucket
+			// caps aggregate ARM reads so no single connection spikes its own read
+			// budget; an empty Where matches every call and "connection" (the throttling
+			// principal) is present on all of them. Generous by design so it only bites
+			// read-heavy connections -- small ones finish within BucketSize and are never
+			// paced. Starting value; tune empirically in a quiet window (cf.
+			// azure_storage_share_file): lower if 429s persist, raise if healthy
+			// connections slow.
+			{
+				Name:       "azure_arm_read_aggregate",
+				FillRate:   10,
+				BucketSize: 250,
+				Scope:      []string{"connection"},
+			},
 		},
 		TableMap: map[string]*plugin.Table{
 			"azure_alert_management":                                       tableAzureAlertMangement(ctx),
