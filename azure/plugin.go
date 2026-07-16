@@ -156,7 +156,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			// connections slow.
 			{
 				Name:       "azure_arm_read_aggregate",
-				FillRate:   25,
+				FillRate:   10,
 				BucketSize: 250,
 				Scope:      []string{"connection"},
 			},
